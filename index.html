@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timeless Trends</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>Timeless Trends</header>
+  
+  <!-- Navigation -->
+  <div class="nav-container">
+    <div style="display: flex; gap: 10px; width: 100%;">
+      <button class="cart-button" onclick="openFilterSidebar()"><i class="fas fa-filter"></i> Filter</button>
+      <input type="text" class="search-bar" placeholder="Search products..." id="searchInput">
+    </div>
+    <div class="user-controls">
+    	
+  <button class="cart-button view-orders-btn">
+    <i class="fas fa-history"></i> Orders
+  </button>
+  
+      <span id="userGreeting" class="user-greeting"></span>
+      <button class="cart-button" onclick="viewWishlist()"><i class="far fa-heart"></i> Wishlist</button>
+      <button id="authButton" class="auth-button" onclick="openAuthModal()"><i class="far fa-user"></i> Login</button>
+      <button class="cart-button" onclick="toggleDarkMode()"><i class="far fa-moon"></i> Dark</button>
+      <button class="cart-button" onclick="openCart()"><i class="fas fa-shopping-cart"></i> Cart</button>
+    </div>
+  </div>
+  
+  <!-- Filter Sidebar -->
+  <div class="filter-overlay" id="filterOverlay"></div>
+  <div class="filter-sidebar" id="filterSidebar">
+    <div class="filter-header">
+      <h3>Filters</h3>
+      <span class="close-btn" onclick="closeFilterSidebar()">&times;</span>
+    </div>
+    
+    <div class="filter-group">
+      <h4>Categories</h4>
+      <div class="filter-option">
+        <label>
+          <input type="checkbox" name="category" value="men" checked> Men's Clothing
+        </label>
+      </div>
+      <div class="filter-option">
+        <label>
+          <input type="checkbox" name="category" value="women" checked> Women's Clothing
+        </label>
+      </div>
+      <div class="filter-option">
+        <label>
+          <input type="checkbox" name="category" value="accessories" checked> Accessories
+        </label>
+      </div>
+    </div>
+    
+    <div class="filter-group">
+      <h4>Price Range</h4>
+      <div class="filter-option">
+        <label>
+          <input type="radio" name="price" value="all" checked> All Prices
+        </label>
+      </div>
+      <div class="filter-option">
+        <label>
+          <input type="radio" name="price" value="0-2000"> Under PKR 2,000
+        </label>
+      </div>
+      <div class="filter-option">
+        <label>
+          <input type="radio" name="price" value="2000-5000"> PKR 2,000 - 5,000
+        </label>
+      </div>
+      <div class="filter-option">
+        <label>
+          <input type="radio" name="price" value="5000-10000"> PKR 5,000 - 10,000
+        </label>
+      </div>
+      <div class="filter-option">
+        <label>
+          <input type="radio" name="price" value="10000+"> Over PKR 10,000
+        </label>
+      </div>
+    </div>
+    
+    <button class="btn-confirm" style="width: 100%;" onclick="applyFilters()">Apply Filters</button>
+  </div>
+  
+  <!-- Product List -->
+  <section class="products" id="product-list">
+    <!-- Products will be loaded here -->
+    <div class="loading-placeholder" style="text-align: center; padding: 20px; grid-column: 1 / -1;">
+      <div class="loading" style="margin: 0 auto;"></div>
+      <p>Loading products...</p>
+    </div>
+  </section>
+  
+  <!-- Auth Modal -->
+  <div id="authModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeAuthModal()">&times;</span>
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchAuthTab('login')">Login</div>
+        <div class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</div>
+      </div>
+      
+      <div id="loginForm" class="auth-form active">
+        <input type="email" id="loginEmail" placeholder="Email">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <p style="text-align: right; margin-top: 5px;">
+          <a href="#" onclick="showPasswordReset()" style="color: #8a2387; font-size: 12px;">Forgot password?</a>
+        </p>
+        <button class="btn-confirm" onclick="login()">Login</button>
+        <p id="loginError" class="auth-error"></p>
+      </div>
+      
+      <div id="signupForm" class="auth-form">
+        <input type="text" id="signupName" placeholder="Full Name">
+        <input type="email" id="signupEmail" placeholder="Email">
+        <input type="password" id="signupPassword" placeholder="Password (min 6 characters)">
+        <input type="password" id="signupConfirmPassword" placeholder="Confirm Password">
+        <button class="btn-confirm" onclick="signup()">Sign Up</button>
+        <p id="signupError" class="auth-error"></p>
+      </div>
+
+      <div id="resetPasswordForm" class="auth-form">
+        <h3 style="margin-bottom: 15px;">Reset Password</h3>
+        <p style="margin-bottom: 15px; font-size: 13px;">
+          Enter your email address and we'll send you a link to reset your password.
+        </p>
+        <input type="email" id="resetEmail" placeholder="Email">
+        <button class="btn-confirm" onclick="sendPasswordReset()">Send Reset Link</button>
+        <p id="resetError" class="auth-error"></p>
+        <p style="text-align: center; margin-top: 15px;">
+          <a href="#" onclick="switchAuthTab('login')" style="color: #8a2387; font-size: 12px;">Back to Login</a>
+        </p>
+      </div>
+    </div>
+  </div>
+  <!-- Order History Modal -->
+<div id="orderHistoryModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeOrderHistory()">&times;</span>
+    <h2>Your Orders</h2>
+    <div id="orderHistoryList" style="margin-top: 15px;">
+      <!-- Orders will be loaded here -->
+    </div>
+  </div>
+</div>
+  
+  <!-- Cart Modal -->
+  <div id="cartModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeCart()">&times;</span>
+      <h2>Your Cart</h2>
+      <div id="cartItems"></div>
+      <div id="couponSection" style="margin: 15px 0;">
+        <input type="text" id="couponCode" placeholder="Enter coupon code" style="padding: 8px; width: 60%;">
+        <button onclick="applyCoupon()" style="padding: 8px 15px; margin-left: 10px;">Apply</button>
+        <p id="couponMessage" style="font-size: 12px; margin-top: 5px;"></p>
+      </div>
+      <p style="text-align: right; margin: 10px 0;"><strong>Total: PKR <span id="totalPrice">0</span></strong></p>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn-back" onclick="closeCart()">Close</button>
+        <button class="btn-confirm" onclick="openCheckout()">Checkout</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Checkout Modal -->
+  <div id="checkoutModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeCheckout()">&times;</span>
+      
+      <div class="checkout-steps">
+        <div class="checkout-step active" id="step1">1. Info</div>
+        <div class="checkout-step" id="step2">2. Shipping</div>
+        <div class="checkout-step" id="step3">3. Payment</div>
+      </div>
+      
+      <!-- Step 1: Customer Information -->
+      <div class="checkout-section active" id="section1">
+        <h3 style="margin-bottom: 10px;">Contact Information</h3>
+        <div class="form-row">
+          <input type="email" id="checkoutEmail" placeholder="Email">
+        </div>
+        
+        <h3 style="margin: 15px 0 10px;">Shipping Address</h3>
+        <div class="form-row">
+          <input type="text" id="checkoutName" placeholder="Full Name">
+        </div>
+        <div class="form-row">
+          <input type="text" id="checkoutAddress" placeholder="Street Address">
+        </div>
+        <div class="form-row">
+          <select id="checkoutProvince">
+            <option value="">Select Province</option>
+            <option value="Punjab">Punjab</option>
+            <option value="Sindh">Sindh</option>
+            <option value="KPK">Khyber Pakhtunkhwa</option>
+            <option value="Balochistan">Balochistan</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <input type="text" id="checkoutCity" placeholder="City" list="citiesDatalist">
+        </div>
+        <div class="form-row">
+          <input type="tel" id="checkoutContact" placeholder="Phone Number">
+        </div>
+        
+        <div class="checkout-actions">
+          <button class="btn-back" onclick="closeCheckout()">Cancel</button>
+          <button class="btn-next" onclick="goToStep(2)">Continue</button>
+        </div>
+      </div>
+      
+      <!-- Step 2: Shipping Method -->
+      <div class="checkout-section" id="section2">
+        <h3 style="margin-bottom: 15px;">Shipping Method</h3>
+        
+        <div class="payment-method active">
+          <input type="radio" name="shipping" id="standardShipping" checked>
+          <label class="payment-method-label" for="standardShipping">
+            <div>
+              <strong>Standard Shipping</strong>
+              <div style="font-size: 12px; color: #666;">3-5 business days</div>
+            </div>
+            <div style="margin-left: auto;">PKR 300</div>
+          </label>
+        </div>
+        
+        <div class="payment-method">
+          <input type="radio" name="shipping" id="expressShipping">
+          <label class="payment-method-label" for="expressShipping">
+            <div>
+              <strong>Express Shipping</strong>
+              <div style="font-size: 12px; color: #666;">1-2 business days</div>
+            </div>
+            <div style="margin-left: auto;">PKR 800</div>
+          </label>
+        </div>
+        
+        <div class="checkout-actions">
+          <button class="btn-back" onclick="goToStep(1)">Back</button>
+          <button class="btn-next" onclick="goToStep(3)">Continue</button>
+        </div>
+      </div>
+      
+      <!-- Step 3: Payment -->
+      <div class="checkout-section" id="section3">
+        <h3 style="margin-bottom: 15px;">Payment Method</h3>
+        
+        <div class="payment-method active">
+          <input type="radio" name="payment" id="cashOnDelivery" checked>
+          <label class="payment-method-label" for="cashOnDelivery">
+            <img src="https://cdn-icons-png.flaticon.com/512/2553/2553610.png" class="payment-method-icon">
+            <span>Cash on Delivery</span>
+          </label>
+        </div>
+        
+        <div class="payment-method">
+          <input type="radio" name="payment" id="easyPaisa">
+          <label class="payment-method-label" for="easyPaisa">
+            <img src="https://play-lh.googleusercontent.com/PCpXdqvUWfCW1mXhH1Y_98yBpgsWxuTSTofy3NGMo9yBTATDyzVkqU580bfSln50bFU" class="payment-method-icon">
+            <span>EasyPaisa</span>
+          </label>
+        </div>
+        <div id="easyPaisaDetails" class="payment-details">
+          <p>Please send payment to:</p>
+          <p><strong>Account Number:</strong> 0312-3456789</p>
+          <p><strong>Account Name:</strong> Timeless Trends</p>
+          <p>After payment, share transaction ID via WhatsApp at 0312-3456789</p>
+        </div>
+        
+        <div class="payment-method">
+          <input type="radio" name="payment" id="jazzcash">
+          <label class="payment-method-label" for="jazzcash">
+            <img src="https://play-lh.googleusercontent.com/PCpXdqvUWfCW1mXhH1Y_98yBpgsWxuTSTofy3NGMo9yBTATDyzVkqU580bfSln50bFU" class="payment-method-icon">
+            <span>JazzCash</span>
+          </label>
+        </div>
+        <div id="jazzcashDetails" class="payment-details">
+          <p>Please send payment to:</p>
+          <p><strong>Account Number:</strong> 0300-1234567</p>
+          <p><strong>Account Name:</strong> Timeless Trends</p>
+          <p>After payment, share transaction ID via WhatsApp at 0300-1234567</p>
+        </div>
+        
+        <div class="checkout-actions">
+          <button class="btn-back" onclick="goToStep(2)">Back</button>
+          <button class="btn-confirm" onclick="confirmOrder()">Confirm Order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order History Modal -->
+  <!-- Order History Modal -->
+<div id="orderHistoryModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeOrderHistory()">&times;</span>
+      <h2>Your Orders</h2>
+      <div id="orderHistoryList" style="margin-top: 15px;">
+        <!-- Orders will be loaded here -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Order Tracking Modal -->
+  <div id="orderTrackingModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeOrderTracking()">&times;</span>
+      <h2>Order Tracking</h2>
+      <div id="trackingDetails" style="margin-top: 15px;">
+        <div class="tracking-progress">
+          <div class="tracking-step" id="stepOrdered">
+            <div class="step-icon">📦</div>
+            <div class="step-label">Order Placed</div>
+          </div>
+          <div class="tracking-step" id="stepProcessed">
+            <div class="step-icon">🏭</div>
+            <div class="step-label">Processing</div>
+          </div>
+          <div class="tracking-step" id="stepShipped">
+            <div class="step-icon">🚚</div>
+            <div class="step-label">Shipped</div>
+          </div>
+          <div class="tracking-step" id="stepDelivered">
+            <div class="step-icon">🏠</div>
+            <div class="step-label">Delivered</div>
+          </div>
+        </div>
+        <div id="trackingUpdates" class="tracking-updates">
+          <!-- Tracking updates will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+  
+  <!-- Popup Notification -->
+  <div id="popup" class="popup">Item added to cart!</div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="script.js"></script>
+  <script src="coupons.js"></script>
+
+ 
+</body>
+</html>
